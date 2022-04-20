@@ -16,10 +16,18 @@ def index():
 
 @app.route("/add_items", methods=["post"])
 def add_items():
-    shopping_items = session["shopping_items"]
-    selected_item = request.form.get("select_items")
-    shopping_items.append(selected_item)
-    session["shopping_items"] = shopping_items
+    session["shopping_items"].append(request.form["select_items"])
+    session.modified = True
+    return render_template("index.html", all_items=session["all_items"], shopping_items=session["shopping_items"])
+
+@app.route("/remove_items", methods=["post"])
+def remove_items():
+    checked_boxes = request.form.getlist("check")
+    for item in checked_boxes:
+        if item in session["shopping_items"]:
+            idx = session["shopping_items"].index(item)
+            session["shopping_items"].pop(idx)
+            session.modified = True
     return render_template("index.html", all_items=session["all_items"], shopping_items=session["shopping_items"])
 
 def get_db():
