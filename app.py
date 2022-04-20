@@ -9,10 +9,18 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY')
 
-@app.route("/")
+@app.route("/", methods=["POST", "GET"])
 def index():
-    data = get_db()
-    return render_template("index.html", all_data=data)
+    session["all_items"], session["shopping_items"] = get_db()
+    return render_template("index.html", all_items=session["all_items"], shopping_items=session["shopping_items"])
+
+@app.route("/add_items", methods=["post"])
+def add_items():
+    shopping_items = session["shopping_items"]
+    selected_item = request.form.get("select_items")
+    shopping_items.append(selected_item)
+    session["shopping_items"] = shopping_items
+    return render_template("index.html", all_items=session["all_items"], shopping_items=session["shopping_items"])
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -22,7 +30,11 @@ def get_db():
         cursor.execute("select name from groceries")
         all_data = cursor.fetchall()
         all_data = [str(val[0]) for val in all_data]
-    return all_data
+
+        shopping_list = all_data.copy()
+        random.shuffle(shopping_list)
+        shopping_list = shopping_list[:5]
+    return all_data, shopping_list
 
 @app.teardown_appcontext
 def close_connection(exception):
