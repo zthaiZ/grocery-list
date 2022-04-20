@@ -2,8 +2,21 @@
 <html>
   <head>
     <title>Grocery List</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static',
+    filename='css/main.css')}}"
+    />
   </head>
   <body>
+    <!--LOGO-->
+    <div>
+      <img
+        src="https://raw.githubusercontent.com/MariyaSha/groceriesList/main/logo.png"
+        alt="grocery app logo"
+      />
+    </div>
+
     <div id="remove_items">
       <form action="/remove_items" method="POST">
         {% for item in shopping_items%}
@@ -13,6 +26,7 @@
         <input type="submit" value="REMOVE ITEMS" />
       </form>
     </div>
+
     <div id="add_item">
       <form action="/add_items" method="POST">
         <select name="select_items">
